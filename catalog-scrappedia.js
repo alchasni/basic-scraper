@@ -3,7 +3,7 @@ const { chromium } = require('playwright');
 const args = process.argv.slice(2);
 
 // Example usage:
-// const url = 'https://www.tokopedia.com/catalog/logitech-80213/logitech-g604?ob=3&page=1&start=0';
+// const url = 'https://www.tokopedia.com/catalog/logitech-80213/logitech-g604';
 // const maxPrice = 500000
 if (args.length < 2) {
     console.error('Please provide both url and maxPrice as arguments.');
@@ -18,16 +18,14 @@ if (isNaN(maxPrice)) {
     process.exit(1);
 }
 
-async function scrapeTokopedia(url, maxPrice) {
+async function scrapeTokopedia(url, maxPrice, isFirstPage) {
     const browser = await chromium.launch({ headless: false });
     const context = await browser.newContext();
     const page = await context.newPage();
 
     try {
-        console.log('Opening Tokopedia Detail Page');
         await page.goto(url, { waitUntil: 'domcontentloaded' });
 
-        console.log('Loading Tokopedia Detail Page...');
         await autoScroll(page)
 
         await page.waitForSelector('.pcv3__info-content', { timeout: 90000 });
@@ -47,19 +45,22 @@ async function scrapeTokopedia(url, maxPrice) {
             const priceText = await priceElements[i].innerText();
             const price = parseFloat(priceText.replace(/[^\d.,]/g, '').replace(/[,.]/g, ''));
 
-            if (price && price < maxPrice) {
+            if (price && price <= maxPrice) {
                 productLinks.push(link);
             }
             i = i + 1
         }
-
+        
         // Output filtered links
         if (productLinks.length === 0) {
-            console.log('You cannot afford anything :(');
+            if (isFirstPage) console.log('You cannot afford anything :(');
         }
         else {
-            console.log('Product that you can buy:');
+            if (isFirstPage) console.log('Product that you can buy:');
             productLinks.forEach(link => console.log(link));
+        }
+        if (productLinks.length < 16) {
+            return true
         }
     } catch (error) {
         console.error('Error:', error);
@@ -68,12 +69,25 @@ async function scrapeTokopedia(url, maxPrice) {
     }
 }
 
+function getCatalogUrl(url, page) {
+    return url + '?ob=3&page=' + page + '&start=' + 16*page
+}
+
+async function scrapeCatalog(url, maxPrice) {
+    let page = 0
+    let isLastPage = await scrapeTokopedia(getCatalogUrl(url, page), maxPrice, true)
+    while (!isLastPage) {
+        page = page + 1
+        isLastPage = await scrapeTokopedia(getCatalogUrl(url, page), maxPrice, false)
+    }
+}
+
 // Need this, because ProductList is at the bottom of catalogue
 async function autoScroll(page){
     await page.evaluate(async () => {
         await new Promise((resolve, reject) => {
             var totalHeight = 0;
-            var distance = 100;
+            var distance = 500;
             var timer = setInterval(() => {
                 var scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
@@ -88,7 +102,7 @@ async function autoScroll(page){
     });
 }
 
-scrapeTokopedia(url, maxPrice)
+scrapeCatalog(url, maxPrice)
     .then(() => {
         console.log('Scraping completed successfully.');
     })
