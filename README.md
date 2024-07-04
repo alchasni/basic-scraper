@@ -17,12 +17,17 @@ npm install
 ```
 
 ### How to use :
-tokopedia price checker :
+- tokopedia price checker :
 ```shell
 node scrappedia <tokopedia-url> <max-price>
 ```
 
-tokopedia catalog price search :
+- tokopedia catalog price search :
 ```shell
 node catalog-scrappedia <tokopedia-catalog-url> <max-price>
+```
+
+- tokopedia catalog price search with UI :
+```shell
+npm start
 ```
