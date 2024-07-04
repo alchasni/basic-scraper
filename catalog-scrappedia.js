@@ -51,7 +51,6 @@ async function scrapeTokopedia(url, maxPrice, isFirstPage) {
             i = i + 1
         }
         
-        // Output filtered links
         if (productLinks.length === 0) {
             if (isFirstPage) console.log('You cannot afford anything :(');
         }
@@ -59,7 +58,10 @@ async function scrapeTokopedia(url, maxPrice, isFirstPage) {
             if (isFirstPage) console.log('Product that you can buy:');
             productLinks.forEach(link => console.log(link));
         }
-        if (productLinks.length < 16) {
+
+        // Need this, because it is possible that the client budget is bigger than the most expensive item in catalog
+        const isLastPage = await page.$eval('.css-16uzo3v-unf-pagination-item[aria-label="Laman berikutnya"]', button => button.disabled);
+        if (productLinks.length < 16 || isLastPage) {
             return true
         }
     } catch (error) {
