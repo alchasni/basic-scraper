@@ -71,6 +71,25 @@
         ipcRenderer.send('start-scraping', { catalogUrl, maxPrice });
     }
 
+    // Show 1 second "Link copied" popup
+    function copyLinkToClipboard(link) {
+        clipboard.writeText(link);
+        const popup = document.createElement('div');
+        popup.textContent = 'Link copied';
+        popup.style.position = 'fixed';
+        popup.style.bottom = '20px';
+        popup.style.right = '20px';
+        popup.style.padding = '10px';
+        popup.style.backgroundColor = '#007bff';
+        popup.style.color = 'white';
+        popup.style.borderRadius = '5px';
+        popup.style.zIndex = '9999';
+        document.body.appendChild(popup);
+        setTimeout(() => {
+            popup.remove();
+        }, 1000);
+    }
+
     ipcRenderer.on('scraping-result', (event, result) => {
         const resultDiv = document.getElementById('result');
         resultDiv.innerHTML = `<p>${result}</p>`;
@@ -89,7 +108,7 @@
 
             linkElement.addEventListener('click', (event) => {
                 event.preventDefault();
-                clipboard.writeText(link);
+                copyLinkToClipboard(link);
             });
 
             linksContainer.appendChild(linkElement);
