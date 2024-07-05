@@ -2,14 +2,24 @@
   "name": "basic-scraper",
   "version": "1.0.0",
   "description": "Basic Scraper using Js.",
-  "main": "index.js",
+  "main": "ui.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "electron": "^31.1.0",
     "playwright": "^1.45.1"
+  },
+  "build": {
+    "appId": "com.chasni.basic-scraper-app",
+    "productName": "Tokopedia Catalog Scrapper",
+    "directories": {
+      "output": "dist"
+    }
   }
 }

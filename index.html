@@ -1,0 +1,122 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tokopedia Catalog Scapper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .link-item {
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<h2>Tokopedia Catalog Scapper</h2>
+<label for="catalogUrl">Catalog URL:</label>
+<input type="text" id="catalogUrl" placeholder="https://www.tokopedia.com/catalog/logitech-80213/logitech-g604">
+<label for="maxPrice">Max Price:</label>
+<input type="text" id="maxPrice" placeholder="50000">
+<button onclick="startScraping()">SCRAPE!!</button>
+<div class="result" id="result"></div>
+<div id="links-container">
+    <!-- Links will be dynamically added here -->
+</div>
+
+<script src="./preload.js"></script>
+<script>
+    function startScraping() {
+        let catalogUrl = document.getElementById('catalogUrl').value;
+        let maxPrice = document.getElementById('maxPrice').value;
+
+        if (catalogUrl === "") {
+            catalogUrl = "https://www.tokopedia.com/catalog/logitech-80213/logitech-g604"
+        }
+        if (maxPrice === "") {
+            maxPrice = 500000
+        }
+        ipcRenderer.send('start-scraping', { catalogUrl, maxPrice });
+    }
+
+    // Show 1 second "Link copied" popup
+    function copyLinkToClipboard(link) {
+        clipboard.writeText(link);
+        const popup = document.createElement('div');
+        popup.textContent = 'Link copied';
+        popup.style.position = 'fixed';
+        popup.style.bottom = '20px';
+        popup.style.right = '20px';
+        popup.style.padding = '10px';
+        popup.style.backgroundColor = '#007bff';
+        popup.style.color = 'white';
+        popup.style.borderRadius = '5px';
+        popup.style.zIndex = '9999';
+        document.body.appendChild(popup);
+        setTimeout(() => {
+            popup.remove();
+        }, 1000);
+    }
+
+    ipcRenderer.on('scraping-result', (event, result) => {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `<p>${result}</p>`;
+        const linksContainer = document.getElementById('links-container');
+        linksContainer.innerHTML = `<p></p>`;
+    });
+
+    ipcRenderer.on('scraping-result-with-link', (event, links) => {
+        const linksContainer = document.getElementById('links-container');
+
+        links.forEach((link) => {
+            const linkElement = document.createElement('a');
+            linkElement.href = '#';
+            linkElement.textContent = `${link}`;
+            linkElement.className = 'link-item';
+
+            linkElement.addEventListener('click', (event) => {
+                event.preventDefault();
+                copyLinkToClipboard(link);
+            });
+
+            linksContainer.appendChild(linkElement);
+            linksContainer.appendChild(document.createElement('br'));
+        });
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `<p></p>`;
+    });
+</script>
+</body>
+</html>
