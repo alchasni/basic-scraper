@@ -19,15 +19,20 @@ npm install
 ### How to use :
 - tokopedia price checker :
 ```shell
-node scrappedia <tokopedia-url> <max-price>
+node tokopedia/scrappedia <tokopedia-url> <max-price>
 ```
 
 - tokopedia catalog price search :
 ```shell
-node catalog-scrappedia <tokopedia-catalog-url> <max-price>
+node tokopedia/catalog-scrappedia <tokopedia-catalog-url> <max-price>
 ```
 
 - tokopedia catalog price search with UI :
 ```shell
 npm start
+```
+
+- Detik.com headless scraper :
+```shell
+node detik/detik
 ```

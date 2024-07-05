@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
-const crScrapper = require('./catalog-scraper');
+const crScrapper = require('./tokopedia/catalog-scraper');
 
 let mainWindow;
 

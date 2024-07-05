@@ -5,6 +5,7 @@ const { chromium } = require('playwright');
     const page = await browser.newPage();
 
     try {
+        console.log('Loading Detik.com...');
         await page.goto('https://www.detik.com/', { waitUntil: 'domcontentloaded' });
 
         await page.waitForSelector('h2.media__title a.media__link');
