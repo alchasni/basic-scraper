@@ -4,7 +4,7 @@ async function fetchArticleTitles() {
     const apiUrl = 'https://garasi.id/api/articles?sort=newest&limit=100';
 
     try {
-        console.log('Loading Detik.com...');
+        console.log('Loading API...');
         const response = await axios.get(apiUrl);
         const articles = response.data.data;
 
